@@ -1,0 +1,1 @@
+SELECT outlets.name, outlets.address, outlets.longitude, outlets.latitude FROM outlets LIMIT 100

@@ -1,0 +1,102 @@
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    email_verified_at: DateTime
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+#BRAND
+type Brand {
+    id: ID!
+    name: String!
+    logo: String!
+    banner: String,
+    outlets: [Outlet!] @hasMany,
+    products: [Product!] @hasMany,
+    created_at: DateTime
+    updated_at: DateTime
+}
+
+#OUTLET
+type Outlet {
+    id: ID!
+    brand_id: String!
+    brand: Brand @belongsTo,
+    name: String!
+    picture: String!
+    address: String!,
+    latitude: String!,
+    longitude: String!,
+    created_at: DateTime
+    updated_at: DateTime
+}
+
+#PRODUCT
+type Product {
+    id: ID!
+    brand_id: String!
+    brand: Brand @belongsTo,
+    name: String!
+    picture: String!
+    price: String!,
+    created_at: DateTime
+    updated_at: DateTime
+}
+
+type Query {
+
+    brand(
+      "Search by primary key."
+      id: ID @eq @rules(apply: ["prohibits:name", "required_without:name"])
+      "Search by name."
+      name: String @eq @rules(apply: ["prohibits:id", "required_without:id", "name"])
+    ): Brand @find
+    brands(
+      "Filters by name. Accepts SQL LIKE wildcards `%` and `_`."
+      name: String @where(operator: "like")
+    ): [Brand!]! @paginate(defaultCount: 10)
+
+
+    outlet(
+      "Search by primary key."
+      id: ID @eq @rules(apply: ["prohibits:name", "required_without:name"])
+      "Search by name."
+      name: String @eq @rules(apply: ["prohibits:id", "required_without:id", "name"])
+    ): Outlet @find
+    outlets(
+      "Filters by name. Accepts SQL LIKE wildcards `%` and `_`."
+      name: String @where(operator: "like")
+    ): [Outlet!]! @paginate(defaultCount: 10)
+
+
+    product(
+      "Search by primary key."
+      id: ID @eq @rules(apply: ["prohibits:name", "required_without:name"])
+      "Search by name."
+      name: String @eq @rules(apply: ["prohibits:id", "required_without:id", "name"])
+    ): Product @find
+    products(
+      "Filters by name. Accepts SQL LIKE wildcards `%` and `_`."
+      name: String @where(operator: "like")
+    ): [Product!]! @paginate(defaultCount: 10)
+}
+
+
+type Mutation {
+  createBrand(name: String!, logo: String!, banner: String!): Brand! @create
+  updateBrand(id: ID!, name: String, logo: String, banner: String): Brand! @update
+  deleteBrand(id: ID!): User @delete
+
+  createOutlet(brand_id: String!, name: String!, picture: String!, address: String!, latitude: String!, longitude: String!): Outlet! @create
+  updateOutlet(id: ID!, brand_id: String, name: String, picture: String, address: String, latitude: String, longitude: String): Outlet! @update
+  deleteOutlet(id: ID!): Outlet @delete
+
+  createProduct(brand_id: String!, name: String!, picture: String!, price: String!): Product! @create
+  updateProduct(id: ID!, brand_id: String, name: String, picture: String, price: String): Product! @update
+  deleteProduct(id: ID!): Product @delete
+}

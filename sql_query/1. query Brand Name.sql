@@ -1,0 +1,1 @@
+SELECT brands.name FROM brands LIMIT 100;
